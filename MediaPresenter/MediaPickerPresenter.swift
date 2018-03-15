@@ -9,10 +9,6 @@
 import UIKit
 import Photos
 
-public enum AttachmentType: String{
-    case camera, photoLibrary, documents, video
-}
-
 //MARK: - Strings
 fileprivate struct Constants {
     static let actionSheetTitle = "Add a File"
@@ -30,11 +26,15 @@ fileprivate struct Constants {
     static let alertForVideoLibraryMessage = "App does not have access to your video. To enable access, tap settings and turn on Video Library Access."
 }
 
+public enum AttachmentType: String{
+    case camera, photoLibrary, documents, video
+}
+
 //MARK: - Attachment Manager
 public struct AttachmentManager {
-    // Here is user place open for customizations of pickers controllers
     public init() {}
     
+    // Customization of pickers controllers
     public struct Settings {
         public var cameraAllowsEditing: Bool = false
         public var libraryAllowsEditing: Bool = false
@@ -73,7 +73,7 @@ extension UIPresentable where Self: UIViewController {
         return self
     }
 }
-//MARK: - Media Picker Presenter
+//MARK: - MediaPickerPresenter Protocol
 public protocol MediaPickerPresenter: UIPresentable {
     var attachmentManager: AttachmentManager { get set }
     func presentAttachmentActionSheet()
@@ -136,7 +136,7 @@ public extension MediaPickerPresenter {
     }
     
     private func openVideo() {
-        //TODO: <# - open video#>
+        //MARK: <#TODO: - open video#>
     }
     
     //MARK: Authorization

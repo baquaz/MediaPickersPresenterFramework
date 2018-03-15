@@ -24,7 +24,11 @@ class ViewController: UIViewController, MediaPickerPresenter {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
+    
+    @IBAction func addFileTap(_ sender: Any) {
+        presentAttachmentActionSheet()
+    }
+    
     //MARK: - Media Picker Presenter Delegate
     func didSelectFromMediaPicker(_ file: FileInfo) {
         print("Picked file: \(file.fileName)")
