@@ -2,29 +2,19 @@
 //  AttachementHandler.swift
 //  MediaPresenter
 //
+//  Usage:
+//    0. Add Privacy Usage Description for camera and phone libraries into Info.plist - Important!
+//    1. Subclass MediaPickerPresenter and conform to protocol
+//    2. (Optional) Customize settings for AttachmentManager settings
+//    3. Open menu - presentAttachmentActionSheet()
+//    4. Check result in delegate - didSelectFromMediaPicker(_ file: FileInfo)
+//
 //  Created by Piotr Błachewicz on 14.03.2018.
 //  Copyright © 2018 Piotr Błachewicz. All rights reserved.
 //
 
 import UIKit
 import Photos
-
-//MARK: - Strings
-fileprivate struct Constants {
-    static let actionSheetTitle = "Add a File"
-    static let actionSheetMessage = "Choose a filetype to add..."
-    static let camera = "Camera"
-    static let phoneLibrary = "Phone Library"
-    static let video = "Video"
-    static let file = "File"
-    
-    static let settingsBtnTitle = "Settings"
-    static let cancelTitle = "Cancel"
-    
-    static let alertForPhotoLibraryMessage = "App does not have access to your photos. To enable access, tap settings and turn on Photo Library Access."
-    static let alertForCameraAccessMessage = "App does not have access to your camera. To enable access, tap settings and turn on Camera."
-    static let alertForVideoLibraryMessage = "App does not have access to your video. To enable access, tap settings and turn on Video Library Access."
-}
 
 public enum AttachmentType: String{
     case camera, photoLibrary, documents, video
@@ -34,8 +24,28 @@ public enum AttachmentType: String{
 public struct AttachmentManager {
     public init() {}
     
-    // Customization of pickers controllers
+    // MARK: Settings
     public struct Settings {
+        //MARK: Titles
+        public struct LabelTitles {
+            public var actionSheetTitle: String = "Add a File"
+            public var actionSheetMessage: String = "Choose a filetype to add..."
+            public var camera: String = "Camera"
+            public var phoneLibrary: String = "Phone Library"
+            public var video: String = "Video"
+            public var file: String = "File"
+            
+            public var settingsBtnTitle: String = "Settings"
+            public var cancelTitle: String = "Cancel"
+            
+            public var alertForPhotoLibraryMessage: String = "App does not have access to your photos. To enable access, tap settings and turn on Photo Library Access."
+            public var alertForCameraAccessMessage: String = "App does not have access to your camera. To enable access, tap settings and turn on Camera."
+            public var alertForVideoLibraryMessage: String = "App does not have access to your video. To enable access, tap settings and turn on Video Library Access."
+        }
+        
+        public var titles: LabelTitles = LabelTitles()
+        
+        //MARK: Picker Options
         public var cameraAllowsEditing: Bool = false
         public var libraryAllowsEditing: Bool = false
         public var documentTypes: [String] = ["public.image", "public.data", "public.content"]
@@ -43,10 +53,13 @@ public struct AttachmentManager {
     }
     
     public var settings = Settings()
-    public var actionSheet = UIAlertController()
-    public var imageHandler: ImagePickerHandler?
-    public var documentHandler: DocumentPickerHandler?
     
+    //MARK: Controllers
+    fileprivate var actionSheet = UIAlertController()
+    fileprivate var imageHandler: ImagePickerHandler?
+    fileprivate var documentHandler: DocumentPickerHandler?
+    
+    //MARK: Setup
     fileprivate mutating func prepareImagePicker(for type: AttachmentType) {
         switch type {
         case .camera:
@@ -84,31 +97,32 @@ public protocol MediaPickerPresenter: UIPresentable {
 public extension MediaPickerPresenter {
     //MARK: Menu
     public func presentAttachmentActionSheet() {
-        attachmentManager.actionSheet = UIAlertController(title: Constants.actionSheetTitle, message: Constants.actionSheetMessage, preferredStyle: .actionSheet)
-        
+        let titles = attachmentManager.settings.titles
         let allowedAttachments = attachmentManager.settings.allowedAttachments
+        
+        attachmentManager.actionSheet = UIAlertController(title: titles.actionSheetTitle, message: titles.actionSheetMessage, preferredStyle: .actionSheet)
         
         for attachment in allowedAttachments {
             switch attachment {
             case .camera:
-                attachmentManager.actionSheet.addAction(UIAlertAction(title: Constants.camera, style: .default, handler: { (action) in
+                attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.camera, style: .default, handler: { (action) in
                     self.checkAuthorizationStatus(attachmentType: .camera)
                 }))
             case .photoLibrary:
-                attachmentManager.actionSheet.addAction(UIAlertAction(title: Constants.phoneLibrary, style: .default, handler: { (action) in
+                attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.phoneLibrary, style: .default, handler: { (action) in
                     self.checkAuthorizationStatus(attachmentType: .photoLibrary)
                 }))
             case .documents:
-                attachmentManager.actionSheet.addAction(UIAlertAction(title: Constants.file, style: .default, handler: { (action) in
+                attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.file, style: .default, handler: { (action) in
                     self.openDocuments()
                 }))
             case .video:
-                attachmentManager.actionSheet.addAction(UIAlertAction(title: Constants.video, style: .default, handler: { (action) in
+                attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.video, style: .default, handler: { (action) in
                     self.openVideo()
                 }))
             }
         }
-        attachmentManager.actionSheet.addAction(UIAlertAction(title: Constants.cancelTitle, style: .cancel, handler: nil))
+        attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.cancelTitle, style: .cancel, handler: nil))
         viewController.present(attachmentManager.actionSheet, animated: true, completion: nil)
     }
     
@@ -173,26 +187,27 @@ public extension MediaPickerPresenter {
     
     //MARK: Settings Alert
     private func showAlertForSettings(_ attachmentType: AttachmentType){
+        let titles = attachmentManager.settings.titles
         var alertTitle: String = ""
         if attachmentType == .camera{
-            alertTitle = Constants.alertForCameraAccessMessage
+            alertTitle = titles.alertForCameraAccessMessage
         }
         if attachmentType == .photoLibrary{
-            alertTitle = Constants.alertForPhotoLibraryMessage
+            alertTitle = titles.alertForPhotoLibraryMessage
         }
         if attachmentType == .video{
-            alertTitle = Constants.alertForVideoLibraryMessage
+            alertTitle = titles.alertForVideoLibraryMessage
         }
         
         let cameraUnavailableAlertController = UIAlertController (title: alertTitle , message: nil, preferredStyle: .alert)
         
-        let settingsAction = UIAlertAction(title: Constants.settingsBtnTitle, style: .destructive) { (_) -> Void in
+        let settingsAction = UIAlertAction(title: titles.settingsBtnTitle, style: .destructive) { (_) -> Void in
             let settingsUrl = NSURL(string:UIApplicationOpenSettingsURLString)
             if let url = settingsUrl {
                 UIApplication.shared.open(url as URL, options: [:], completionHandler: nil)
             }
         }
-        let cancelAction = UIAlertAction(title: Constants.cancelTitle, style: .default, handler: nil)
+        let cancelAction = UIAlertAction(title: titles.cancelTitle, style: .default, handler: nil)
         cameraUnavailableAlertController .addAction(cancelAction)
         cameraUnavailableAlertController .addAction(settingsAction)
         viewController.present(cameraUnavailableAlertController , animated: true, completion: nil)
