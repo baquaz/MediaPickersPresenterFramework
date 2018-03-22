@@ -19,12 +19,16 @@ class ViewController: UIViewController, MediaPickerPresenter {
         super.viewDidLoad()
         
         var titles = attachmentManager.settings.titles
+        var settings = attachmentManager.settings
+        
+        //Customize titles
         titles.actionSheetTitle = "My title"
         titles.cancelTitle = "CANCEL"
         
-        var settings = attachmentManager.settings
+        //Customize pickers settings
         settings.allowedAttachments = [.photoLibrary, .documents];
         settings.documentTypes = ["public.image", "public.data"];
+        
         settings.libraryAllowsEditing = true
         settings.cameraAllowsEditing = true
     }

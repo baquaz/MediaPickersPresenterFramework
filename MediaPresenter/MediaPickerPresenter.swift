@@ -29,7 +29,7 @@ public struct AttachmentManager {
         //MARK: Titles
         public struct LabelTitles {
             public var actionSheetTitle: String = "Add a File"
-            public var actionSheetMessage: String = "Choose a filetype to add..."
+            public var actionSheetSubtitle: String = "Choose a type..."
             public var camera: String = "Camera"
             public var phoneLibrary: String = "Phone Library"
             public var video: String = "Video"
@@ -55,7 +55,7 @@ public struct AttachmentManager {
     public var settings = Settings()
     
     //MARK: Controllers
-    fileprivate var actionSheet = UIAlertController()
+    fileprivate lazy var actionSheet = UIAlertController()
     fileprivate var imageHandler: ImagePickerHandler?
     fileprivate var documentHandler: DocumentPickerHandler?
     
@@ -100,7 +100,7 @@ public extension MediaPickerPresenter {
         let titles = attachmentManager.settings.titles
         let allowedAttachments = attachmentManager.settings.allowedAttachments
         
-        attachmentManager.actionSheet = UIAlertController(title: titles.actionSheetTitle, message: titles.actionSheetMessage, preferredStyle: .actionSheet)
+        attachmentManager.actionSheet = UIAlertController(title: titles.actionSheetTitle, message: titles.actionSheetSubtitle, preferredStyle: .actionSheet)
         
         for attachment in allowedAttachments {
             switch attachment {

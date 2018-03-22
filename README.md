@@ -13,22 +13,31 @@ __2. Subclass MediaPickerPresenter and conform to protocol:__
         
         var attachmentManager: AttachmentManager = AttachmentManager()
 
-        //... some code
+        //...
 
         func didSelectFromMediaPicker(_ file: FileInfo) {
             //do more with file...
         }
 ```
-__3. _(Optional) Customize settings for AttachmentManager settings:___
+__3. _(Optional) Customize AttachmentManager:___
 ```swift
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //For example
-        attachmentManager.settings.allowedAttachments = [.photoLibrary, .documents];
-        attachmentManager.settings.documentTypes = ["public.image", "public.data"];
-        attachmentManager.settings.libraryAllowsEditing = true
-        attachmentManager.settings.cameraAllowsEditing = true
+        //For example:
+        var titles = attachmentManager.settings.titles
+        var settings = attachmentManager.settings
+        
+	//Customize titles
+	titles.actionSheetTitle = "My title"
+        titles.cancelTitle = "CANCEL"
+        
+	//Customize pickers settings
+        settings.allowedAttachments = [.photoLibrary, .documents];
+        settings.documentTypes = ["public.image", "public.data"];
+        
+	settings.libraryAllowsEditing = true
+        settings.cameraAllowsEditing = true
     }
 ```
 __4. Open menu:__
