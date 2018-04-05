@@ -2,6 +2,8 @@
 This framework provides an easy way to handle camera, phone library and video pickers. 
 It handles permissions and returns a picked data in a delegate.
 
+<img src="demo.gif"/>
+
 ## Usage
 __0. Import module__
 
