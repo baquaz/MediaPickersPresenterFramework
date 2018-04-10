@@ -11,12 +11,7 @@ import Photos
 import AssetsLibrary
 
 public class ImagePickerHandler: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    enum ImageType: String {
-        case Original
-        case Edited
-    }
-    
-    var currentVC: UIViewController?
+
     var delegate: MediaPickerPresenter?
     var picker = UIImagePickerController()
     
