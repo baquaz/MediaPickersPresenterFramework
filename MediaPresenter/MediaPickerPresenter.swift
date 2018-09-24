@@ -123,7 +123,9 @@ public extension MediaPickerPresenter {
             }
         }
         attachmentManager.actionSheet.addAction(UIAlertAction(title: titles.cancelTitle, style: .cancel, handler: nil))
-        viewController.present(attachmentManager.actionSheet, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.viewController.present(self.attachmentManager.actionSheet, animated: true, completion: nil)
+        }
     }
     
     //MARK: Open Controllers
@@ -131,7 +133,9 @@ public extension MediaPickerPresenter {
         if UIImagePickerController.isSourceTypeAvailable(.camera) {
             attachmentManager.prepareImagePicker(for: .camera)
             attachmentManager.imageHandler?.delegate = self
-            viewController.present((attachmentManager.imageHandler?.picker)!, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                self.viewController.present((self.attachmentManager.imageHandler?.picker)!, animated: true, completion: nil)
+            }
         }
     }
     
@@ -139,14 +143,18 @@ public extension MediaPickerPresenter {
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
             attachmentManager.prepareImagePicker(for: .photoLibrary)
             attachmentManager.imageHandler?.delegate = self
-            viewController.present((attachmentManager.imageHandler?.picker)!, animated: true, completion: nil)
+            DispatchQueue.main.async {
+                self.viewController.present((self.attachmentManager.imageHandler?.picker)!, animated: true, completion: nil)
+            }
         }
     }
     
     private func openDocuments() {
         attachmentManager.prepareDocumentPicker()
         attachmentManager.documentHandler?.delegate = self
-        viewController.present((attachmentManager.documentHandler?.picker)!, animated: true, completion: nil)
+        DispatchQueue.main.async {
+            self.viewController.present((self.attachmentManager.documentHandler?.picker)!, animated: true, completion: nil)
+        }
     }
     
     private func openVideo() {
@@ -202,9 +210,9 @@ public extension MediaPickerPresenter {
         let cameraUnavailableAlertController = UIAlertController (title: alertTitle , message: nil, preferredStyle: .alert)
         
         let settingsAction = UIAlertAction(title: titles.settingsBtnTitle, style: .destructive) { (_) -> Void in
-            let settingsUrl = NSURL(string:UIApplicationOpenSettingsURLString)
+            let settingsUrl = NSURL(string:UIApplication.openSettingsURLString)
             if let url = settingsUrl {
-                UIApplication.shared.open(url as URL, options: [:], completionHandler: nil)
+                UIApplication.shared.open(url as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary([:]), completionHandler: nil)
             }
         }
         let cancelAction = UIAlertAction(title: titles.cancelTitle, style: .default, handler: nil)
@@ -212,4 +220,9 @@ public extension MediaPickerPresenter {
         cameraUnavailableAlertController .addAction(settingsAction)
         viewController.present(cameraUnavailableAlertController , animated: true, completion: nil)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

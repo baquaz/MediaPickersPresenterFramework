@@ -15,7 +15,7 @@ public class ImagePickerHandler: NSObject, UIImagePickerControllerDelegate, UINa
     var delegate: MediaPickerPresenter?
     var picker = UIImagePickerController()
     
-    init(sourceType: UIImagePickerControllerSourceType, allowsEditing: Bool) {
+    init(sourceType: UIImagePickerController.SourceType, allowsEditing: Bool) {
         picker.allowsEditing = allowsEditing
         picker.sourceType = sourceType
         super.init()
@@ -27,18 +27,21 @@ public class ImagePickerHandler: NSObject, UIImagePickerControllerDelegate, UINa
         picker.dismiss(animated: true, completion: nil)
     }
     
-    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    public func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
         let imageTypeInfo: String
         if picker.allowsEditing {
-            imageTypeInfo = UIImagePickerControllerEditedImage
+            imageTypeInfo = convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.editedImage)
         } else {
-            imageTypeInfo = UIImagePickerControllerOriginalImage
+            imageTypeInfo = convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)
         }
         
         if let image = info[imageTypeInfo] as? UIImage {
             var fileName = "file.jpg"
             
-            if let asset = info[UIImagePickerControllerPHAsset] as? PHAsset {
+            if let asset = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.phAsset)] as? PHAsset {
                 if let assetFileName = (asset.value(forKey: "filename")) as? String {
                     fileName = assetFileName
                 }
@@ -49,4 +52,14 @@ public class ImagePickerHandler: NSObject, UIImagePickerControllerDelegate, UINa
         }
         picker.dismiss(animated: true, completion: nil)
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

@@ -37,7 +37,7 @@ public struct FileInfo {
    public init(withImage image: UIImage, imageName: String) {
         self.fileName = imageName
         self.mimeType = fileName.mimeType()
-        if let imageData = UIImageJPEGRepresentation(image, 1) {
+        if let imageData = image.jpegData(compressionQuality: 1) {
             self.imageData = imageData
         }
     }
